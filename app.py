@@ -11,7 +11,7 @@ def main():
     # Define main area and sticky footer
     main_area = st.container()
     with main_area:
-        st.write("This is the main area")
+        st.write("This is the main area") 
         st.write("")
 
         # Add sticky footer
