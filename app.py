@@ -4,7 +4,7 @@ def main():
     # Set page layout
     st.set_page_config(layout="wide")
 
-    # Define left pane
+    # Define left pane 
     left_column = st.sidebar
     left_column.title(" ")
 
