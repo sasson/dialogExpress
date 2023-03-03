@@ -18,8 +18,6 @@ class Chats:
         for chat in self.chats.values:
             oList.append(chat);
             
-        
-        
 # Define app
 def app():
     chat = Chat("simple")
@@ -31,9 +29,9 @@ def app():
         st.session_state["chats"] = Chats()
 
     # Add sidebar with options
-    #st.sidebar.title("Dialog History")
+    st.sidebar.title("Chats")
 
-    answer = st.text_input("Your answer:")
+    answer = st.text_input(">>>>>>")
     if answer:
         st.write(answer)
 
