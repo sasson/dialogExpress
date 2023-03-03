@@ -22,7 +22,7 @@ class Chats:
         
 # Define app
 def app():
-    chat = Chat()
+    chat = Chat("simple")
     
     # Set page title and favicon
     st.set_page_config(page_title="Dialog Express", page_icon=":hibiscus:")
