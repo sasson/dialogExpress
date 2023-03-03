@@ -1,6 +1,1 @@
-typing
-openai
-pymongo
-numpy
-yaml
 streamlit
