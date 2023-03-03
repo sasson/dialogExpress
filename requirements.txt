@@ -2,6 +2,5 @@ typing
 openai
 pymongo
 numpy
-hashlib
 yaml
 streamlit
