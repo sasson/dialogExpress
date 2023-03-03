@@ -1,24 +1,68 @@
 import streamlit as st
+import yaml
+from datetime import time
 
-def main():
-    # Set page layout
-    st.set_page_config(layout="wide")
+class Chat:
+    def __init__(self, chat_name:str):
+        self.chat_name = chat_name
 
-    # Define left pane 
-    left_column = st.sidebar
-    left_column.title(" ")
+class Chats:
+    def __init__(self):
+        self.chats = {}
+    
+    def add(self, chat : Chat):
+        self.chats[chat.chat_name] = chat;
+     
+    def get_list(self):
+        oList = []
+        for chat in self.chats.values:
+            oList.append(chat);
+            
+        
+        
+# Define app
+def app():
+    chat = Chat()
+    
+    # Set page title and favicon
+    st.set_page_config(page_title="Dialog Express", page_icon=":hibiscus:")
 
-    # Define main area AND sticky footer
-    main_area = st.container()
-    with main_area:
-        st.write("This is the main area") 
-        st.write("")
+    if not "chats" in st.session_state:
+        st.session_state["chats"] = Chats()
 
-        # Add sticky footer
-        st.markdown('<div style="position: fixed; bottom: 0; width: 100%; background-color: lightgray; padding: 10px;">', unsafe_allow_html=True)
-        search_query = st.text_input("Search")
-        st.markdown('</div>', unsafe_allow_html=True)
+    # Add sidebar with options
+    #st.sidebar.title("Dialog History")
+
+    answer = st.text_input("Your answer:")
+    if answer:
+        st.write(answer)
+
+    # Add file uploader for questions and answers
+    file = st.file_uploader("Upload questions and answers", type=["yaml"])
+    
+    questions = []
+
+    # Read questions and answers from file
+    if file:
+        data = yaml.safe_load(file)
+        questions = data
+
+        # Display questions and answers
+        for i, qa in enumerate(questions):
+            # write the question
+            q = qa [0]
+            st.write(q)
+            
+            # write all answers
+            for a in qa[1]:
+                st.write(a)
 
 
-if __name__ == "__main__":
-    main()
+
+    else:
+        # Use default questions if no file is uploaded
+        questions = []
+    
+if __name__ == '__main__':
+    app()
+
