@@ -3,5 +3,6 @@ numpy
 pyyaml
 typing
 pymongo
-openai
+cohere
+
 
