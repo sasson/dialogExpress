@@ -4,7 +4,7 @@ import cohere
 cohere_api_key = st.secrets["cohere_api_key"];
 co = cohere.Client(cohere_api_key)
 
-st.sidebar.title("FUNPEDIA")
+st.sidebar.title("Dialog Express")
 
 def render_user_message(message):
     st.markdown(
