@@ -51,6 +51,7 @@ if prompt:
 
     response = co.chat(
         chat_history=st.session_state.messages,
+        max_tokens = 50,
         message= "Continue a nice, friendly conversation, wuth five to ten line entertaining answers. " +  prompt,
         model="command-nightly", 
 	    temperature = 2.0,
@@ -66,5 +67,7 @@ if prompt:
     # add the echo message to chat history
     st.session_state.messages.append({"role":"CHATBOT","message":answer})
 
-    if len(st.session_state.messages) > 30:
-        st.session_state.messages = st.session_state.messages[-30:]
+    L = len(st.session_state.messages) 
+    if L > 12:
+        st.session_state.messages = st.session_state.messages[-12:]
+        
