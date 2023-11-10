@@ -51,10 +51,10 @@ if prompt:
 
     response = co.chat(
         chat_history=st.session_state.messages,
-        max_tokens = 50,
-        message= "Continue a nice, friendly conversation, wuth five to ten line entertaining answers. " +  prompt,
+        max_tokens=150,
+        message="Continue a nice, friendly conversation, with entertaining, three-to-five line answers. " +  prompt,
         model="command-nightly", 
-	    temperature = 2.0,
+	    temperature=0.5,
         prompt_truncation='auto',
         connectors=[{"id": "web-search"}]
     )
@@ -70,4 +70,3 @@ if prompt:
     L = len(st.session_state.messages) 
     if L > 12:
         st.session_state.messages = st.session_state.messages[-12:]
-        
