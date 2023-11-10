@@ -64,7 +64,7 @@ if input_text:
         """ +  input_text
     response = co.chat(
         chat_history=st.session_state.messages,
-        max_tokens=400,
+        max_tokens=800,
         message=message_text,
         model="command-nightly", 
 	    temperature=1.0,
