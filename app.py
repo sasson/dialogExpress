@@ -60,7 +60,8 @@ if input_text:
         Continue a nice, informal conversation, with short answers. 
         You are an expert of world knowledge. 
         I am going to ask you a question. 
-        Your response should be concise but fun and friendly:        
+        Your response should be concise but fun and friendly.
+        But no 'feel free to ask' type pushing! :        
         """ +  input_text
     response = co.chat(
         chat_history=st.session_state.messages,
