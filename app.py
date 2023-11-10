@@ -17,16 +17,22 @@ def render_chatbot_message(message):
         f"<div style='text-align: left; margin-right:50px; color: #111111; padding: 10px; border-radius: 5px;'>{message}</div><br>",        unsafe_allow_html=True
     )
 
+
+
 # initialize the Session State
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+    start_message = """
+    I'm excited to show off my world knowledge and have a fun chat with you. 
+    Let's make this a breeze!
+    """
+    render_chatbot_message(message=start_message)
 
 # iterate through the messages in the Session State
 # and display them in the chat message container
 # message["role"] is used because we need to identify user and bot
 
-chat_history = []
-context = ""
 for message_object in st.session_state.messages:
     role = message_object["role"]
     message = message_object["message"]
