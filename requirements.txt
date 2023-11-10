@@ -1,8 +1,7 @@
 streamlit
+cohere
 numpy
 pyyaml
 typing
-pymongo
-cohere
 
 

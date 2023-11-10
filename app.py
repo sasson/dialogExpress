@@ -38,23 +38,30 @@ for message_object in st.session_state.messages:
     else:
         st.write(f"UNEXPECTED ROLE {role}")
 
-soft_text = "Say something"
+hint_text = "Say something"
+
 # check if user made a chat input 
-prompt = st.chat_input(soft_text)
-if prompt:
+input_text = st.chat_input(hint_text)
+if input_text:
     # Display user message
-    render_user_message(message = prompt)
+    render_user_message(message = input_text)
     st.write(f"<br>", unsafe_allow_html=True)
 
     # add message to history
-    st.session_state.messages.append({"role": "USER", "message": prompt})
+    st.session_state.messages.append({"role": "USER", "message": input_text})
 
+    message_text = """
+        Continue a nice, informal conversation, with short answers. 
+        You are an expert of world knowledge. 
+        I am going to ask you a question. 
+        Your response should be concise but fun and friendly:        
+        """ +  input_text
     response = co.chat(
         chat_history=st.session_state.messages,
-        max_tokens=150,
-        message="Continue a nice, friendly conversation, with entertaining, three-to-five line answers. " +  prompt,
+        max_tokens=400,
+        message=message_text,
         model="command-nightly", 
-	    temperature=0.5,
+	    temperature=1.0,
         prompt_truncation='auto',
         connectors=[{"id": "web-search"}]
     )
