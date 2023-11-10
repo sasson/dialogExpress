@@ -1,66 +1,70 @@
 import streamlit as st
-import yaml
-from datetime import time
+import cohere
 
-class Chat:
-    def __init__(self, chat_name:str):
-        self.chat_name = chat_name
+cohere_api_key = st.secrets["cohere_api_key"];
+co = cohere.Client(cohere_api_key)
 
-class Chats:
-    def __init__(self):
-        self.chats = {}
-    
-    def add(self, chat : Chat):
-        self.chats[chat.chat_name] = chat;
-     
-    def get_list(self):
-        oList = []
-        for chat in self.chats.values:
-            oList.append(chat);
-            
-# Define app
-def app():
-    chat = Chat("simple")
-    
-    # Set page title and favicon
-    st.set_page_config(page_title="Dialog Express", page_icon=":hibiscus:")
+st.sidebar.title("Dialog Express")
 
-    if not "chats" in st.session_state:
-        st.session_state["chats"] = Chats()
+def render_user_message(message):
+    st.markdown(
+        f"<div style='text-align: right;'><span style='margin-left:200px; color: white; background-color: blue; padding: 10px; border-radius: 5px;'>{message}</span></div><br>",
+        unsafe_allow_html=True
+    )
 
-    # Add sidebar with options
-    st.sidebar.title("Chats")
+def render_chatbot_message(message):
+    st.markdown(
+        f"<div style='text-align: left; margin-right:50px; color: #111111; padding: 10px; border-radius: 5px;'>{message}</div><br>",        unsafe_allow_html=True
+    )
 
-    answer = st.text_input(">>>>>>")
-    if answer:
-        st.write(answer)
+# initialize the Session State
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-    # Add file uploader for questions and answers
-    file = st.file_uploader("Upload questions and answers", type=["yaml"])
-    
-    questions = []
+# iterate through the messages in the Session State
+# and display them in the chat message container
+# message["role"] is used because we need to identify user and bot
 
-    # Read questions and answers from file
-    if file:
-        data = yaml.safe_load(file)
-        questions = data
+chat_history = []
+context = ""
+for message_object in st.session_state.messages:
+    role = message_object["role"]
+    message = message_object["message"]
 
-        # Display questions and answers
-        for i, qa in enumerate(questions):
-            # write the question
-            q = qa [0]
-            st.write(q)
-            
-            # write all answers
-            for a in qa[1]:
-                st.write(a)
-
-
-
+    if role == "USER":
+        render_user_message(message = message)
+    elif role == "CHATBOT":
+        render_chatbot_message(message = message)
     else:
-        # Use default questions if no file is uploaded
-        questions = []
-    
-if __name__ == '__main__':
-    app()
+        st.write(f"UNEXPECTED ROLE {role}")
 
+soft_text = "Say something"
+# check if user made a chat input 
+prompt = st.chat_input(soft_text)
+if prompt:
+    # Display user message
+    render_user_message(message = prompt)
+    st.write(f"<br>", unsafe_allow_html=True)
+
+    # add message to history
+    st.session_state.messages.append({"role": "USER", "message": prompt})
+
+    response = co.chat(
+        chat_history=st.session_state.messages,
+        message= "Continue a nice, friendly conversation, wuth five to ten line entertaining answers. " +  prompt,
+        model="command-nightly", 
+	    temperature = 2.0,
+        prompt_truncation='auto',
+        connectors=[{"id": "web-search"}]
+    )
+
+    answer = response.text
+
+    render_chatbot_message(message = answer)
+    st.write(f"<br>", unsafe_allow_html=True)
+
+    # add the echo message to chat history
+    st.session_state.messages.append({"role":"CHATBOT","message":answer})
+
+    if len(st.session_state.messages) > 30:
+        st.session_state.messages = st.session_state.messages[-30:]
