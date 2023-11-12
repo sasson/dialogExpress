@@ -147,17 +147,17 @@ with st.sidebar:
     else:
         topic = param_value
 
-    if topic:
-        generated_content = generate_content(topic)
-        st.session_state.article = generated_content
-        st.markdown(st.session_state.article)
-
 # initialize the Session State
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 if "article" not in st.session_state:
-    st.session_state.article = ""
+    st.session_state.article = None
+
+if not st.session_state.article:
+    generated_content = generate_content(topic)
+    st.session_state.article = generated_content
+    st.markdown(st.session_state.article)
 
 # iterate through the messages in the Session State
 # and display them in the chat message container
