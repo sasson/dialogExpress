@@ -105,7 +105,7 @@ def render_chatbot_message(message):
 def  generate_content(topic):
     message_text = """
         You are an expert of world knowledge. 
-        Write a concise wiki-style article about 
+        Write a short plain text article about this topic: 
         """ +  topic
     response = co.chat(
         max_tokens=800,
@@ -129,35 +129,36 @@ query_params = st.experimental_get_query_params()
 # Query parameters are returned as a dictionary
 
 # You can access specific parameters like this:
-param_value = query_params.get('q', ['default_value'])[0]
+#  param_value = query_params.get('q', ['default_value'])[0]
 # 'param_name' is the name of your query parameter
 # 'default_value' is a fallback value if the parameter isn't found
 
-
-topic = None
-generated_content = ""
+# initialize the Session State
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "article" not in st.session_state:
+    st.session_state.article = ""
+if "article_to_display" not in st.session_state:
+    st.session_state.article_to_display = ""
 
 with st.sidebar:
     # Title 
     st.title("Fun-cyclopedia")
 
+generated_content = ""
+
+with st.sidebar:
     # Get Topic
-    if param_value == 'default_value':
-        topic = st.text_input("Enter a topic:", "")
-    else:
-        topic = param_value
+    topic = st.text_input("Enter a topic:", "")
+    if topic:
+        st.session_state.article = topic
+        st.session_state.article_to_display = topic
 
-# initialize the Session State
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-if "article" not in st.session_state:
-    st.session_state.article = None
-
-if not st.session_state.article:
-    generated_content = generate_content(topic)
-    st.session_state.article = generated_content
-    st.markdown(st.session_state.article)
+if st.session_state.article_to_display:
+    generated_content = generate_content(st.session_state.article_to_display)
+    st.session_state.article_to_display = ""
+    with st.sidebar:
+        st.markdown(generated_content)
 
 # iterate through the messages in the Session State
 # and display them in the chat message container
