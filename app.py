@@ -103,21 +103,17 @@ def render_chatbot_message(message):
     )
 
 def  generate_content(topic):
-    message_text = """
+    prompt = """
         You are an expert of world knowledge. 
         Write a short plain text article about this topic: 
         """ +  topic
-    response = co.chat(
-        max_tokens=800,
-        message=message_text,
-        model="command-nightly", 
-	    temperature=1.0,
-        prompt_truncation='auto',
-        connectors=[{"id": "web-search"}]
+    response = co.generate(
+        prompt=prompt,
+        model="command-nightly"
     )
 
-    generated_content = response.text
-
+    generated_content = response.generations[0].text
+    
     return  generated_content
 
 
