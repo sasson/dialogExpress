@@ -1,10 +1,95 @@
 import streamlit as st
 import cohere
+import random
 
-cohere_api_key = st.secrets["cohere_api_key"];
-co = cohere.Client(cohere_api_key)
+url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app/"
 
-st.sidebar.title("Dialog Express")
+oList = [
+"Albania",
+"Tirana",
+"Armenia",	
+"Yerevan",
+"Australia", 	
+"Canberra",
+"Austria",	
+"Vienna",
+"Azerbaijan", 	
+"Baku",
+"Belarus",     
+"Minsk",
+"Belgium", 	
+"Brussels",
+"Bulgaria",	
+"Sofia",
+"Canada",	
+"Ottawa",
+"Croatia",
+"Zagreb",
+"Cyprus",
+"Nicosia",
+"Denmark",	
+"Copenhagen",
+"England", 	
+"London",
+"Estonia",	
+"Tallinn",
+"Finland",	
+"Helsinki",
+"France",
+"Paris",
+"Georgia", 	
+"Tbilisi",
+"Germany", 	
+"Berlin",
+"Greece",
+"Athens",
+"Hungary",	
+"Budapest",
+"Iceland",	
+"Reykjavik",
+"Ireland",
+"Dublin",
+"Israel",
+"Jerusalem",
+"Italy",
+"Rome",
+"Latvia",
+"Riga",
+"Luxembourg",
+"Monaco",
+"Netherlands", 	
+"Amsterdam",
+"Norway",
+"Oslo",
+"Poland", 	
+"Warsaw",
+"Portugal", 	
+"Lisbon",
+"Romania",	
+"Bucharest",
+"Russia",
+"Moscow",
+"Scotland", 	
+"Edinburgh",
+"Serbia",
+"Belgrade",
+"Slovakia",	
+"Bratislava",
+"Slovenia",
+"Ljubljana",
+"Spain",
+"Madrid",
+"Sweden",
+"Stockholm",
+"Switzerland", 	
+"Bern",
+"Turkey", 	
+"Ankara",
+"Ukraine",	
+"Kiev",
+"Vatican City",
+"Wales",
+"Cardiff" ]
 
 def render_user_message(message):
     st.markdown(
@@ -17,17 +102,62 @@ def render_chatbot_message(message):
         f"<div style='text-align: left; margin-right:50px; color: #111111; padding: 10px; border-radius: 5px;'>{message}</div><br>",        unsafe_allow_html=True
     )
 
+def  generate_content(topic):
+    message_text = """
+        You are an expert of world knowledge. 
+        Write a concise wiki-style article about 
+        """ +  topic
+    response = co.chat(
+        max_tokens=800,
+        message=message_text,
+        model="command-nightly", 
+	    temperature=1.0,
+        prompt_truncation='auto',
+        connectors=[{"id": "web-search"}]
+    )
 
+    generated_content = response.text
+
+    return  generated_content
+
+
+cohere_api_key = st.secrets["cohere_api_key"];
+co = cohere.Client(cohere_api_key)
+
+# Accessing the query parameters
+query_params = st.experimental_get_query_params()
+# Query parameters are returned as a dictionary
+
+# You can access specific parameters like this:
+param_value = query_params.get('q', ['default_value'])[0]
+# 'param_name' is the name of your query parameter
+# 'default_value' is a fallback value if the parameter isn't found
+
+
+topic = None
+generated_content = ""
+
+with st.sidebar:
+    # Title 
+    st.title("Fun-cyclopedia")
+
+    # Get Topic
+    if param_value == 'default_value':
+        topic = st.text_input("Enter a topic:", "")
+    else:
+        topic = param_value
+
+    if topic:
+        generated_content = generate_content(topic)
+        st.session_state.article = generated_content
+        st.markdown(st.session_state.article)
 
 # initialize the Session State
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-    start_message = """
-    I'm excited to show off my world knowledge and have a fun chat with you. 
-    Let's make this a breeze!
-    """
-    render_chatbot_message(message=start_message)
+if "article" not in st.session_state:
+    st.session_state.article = ""
 
 # iterate through the messages in the Session State
 # and display them in the chat message container
