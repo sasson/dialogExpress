@@ -104,18 +104,31 @@ def render_chatbot_message(message):
     )
 
 def  generate_content(topic):
-    prompt = """
-        Write a short plain text article 
+    prompt = """Write a short plain-text encycloopedia article 
         about this topic: 
-        """ +  topic
+        """ +  topic + """ 
+        Article:
+        """
     response = co.generate(
+        model="command-nightly",
         prompt=prompt,
-        model="command-nightly"
+        temperature=0.0,
+        num_generations=1,
+        max_tokens=1600
     )
 
     generated_content = response.generations[0].text
     
     return  generated_content
+
+def clear_input():
+    st.session_state.enter_topic = ""
+
+def initialize_session_state():
+    st.session_state.messages = []
+    st.session_state.topic = ""
+    st.session_state.article_name = ""   # request to generate
+    st.session_state.article_text = ""   # generated text
 
 
 cohere_api_key = st.secrets["cohere_api_key"];
@@ -129,9 +142,10 @@ query_params = st.experimental_get_query_params()
 param_values = query_params.get('q', [""]) 
 q = param_values [0]
 
-# initialize the Session State
+# initialize variable in session state
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    initialize_session_state();
+
 if "topic" not in st.session_state:
     st.session_state.topic = ""
 if "article_name" not in st.session_state:
@@ -139,25 +153,31 @@ if "article_name" not in st.session_state:
 if "article_text" not in st.session_state:
     st.session_state.article_text = ""
 
-with st.sidebar:
-    # Title 
-    st.title("Fun-cyclopedia")
+if q:
+    st.session_state.topic = q
+    st.session_state.article_name = q
+
 
 generated_content = ""
 
 with st.sidebar:
-    # Get Topic
-    if not q == "":
-        topic = q
-    else:
-        topic = st.text_input("Enter a topic:", "")
+    # Title 
+    st.title("FunCycloPedia")
 
-    if topic:
-        st.session_state.topic = topic
-        if st.session_state.article_text == "":
-            st.session_state.article_name = topic
-    else:
-        st.session_state.article_name = ""
+    if st.session_state.topic == "":
+        # Create a text input widget in the sidebar
+        input_value = st.sidebar.text_input("Enter a topic", value=st.session_state.topic, key="enter_topic")
+
+        if input_value:
+            st.session_state.topic = input_value
+            st.session_state.article_name = input_value
+            st.session_state.article_text == ""
+        else:
+            st.session_state.article_name = ""
+
+    # Button to manually clear the text input
+    if st.sidebar.button("New Chat"):
+        initialize_session_state();
 
 if st.session_state.article_text == "":
     if not st.session_state.article_name == "":
@@ -165,8 +185,8 @@ if st.session_state.article_text == "":
         st.session_state.article_text = generated_content
         st.session_state.messages = []
         # start chat history with the article text
-        st.session_state.article_name = ""
         st.session_state.messages.append({"role":"CHATBOT","message":st.session_state.article_text})
+        st.session_state.article_name = ""
 
 # iterate through the messages in the Session State
 # and display them in the chat message container
@@ -186,7 +206,7 @@ for message_object in st.session_state.messages:
 hint_text = "Say something"
 
 # check if user made a chat input 
-input_text = st.chat_input(hint_text)
+input_text = st.chat_input(hint_text, key="chat_input")
 if input_text:
     # Display the most recent user message
     render_user_message(message = input_text)
@@ -195,12 +215,10 @@ if input_text:
     # and add it to the list of messages
     st.session_state.messages.append({"role": "USER", "message": input_text})
 
-    message_text = """
+    message_text = """You are a friendly AI and an expert of world knowledge. 
         Continue a nice, informal conversation, with short answers. 
-        You are an expert of world knowledge. 
         I am going to ask you a question. 
-        Your response should be concise but fun and friendly.
-        But no 'feel free to ask' type pushing! :        
+        Your response should be concise but fun and friendly:        
         """ +  input_text
     response = co.chat(
         chat_history=st.session_state.messages,
