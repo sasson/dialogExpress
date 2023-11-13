@@ -4,92 +4,93 @@ import random
 
 url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app/"
 
-oList = [
+def get_topics():
+    oList = [
 "Albania",
-"Tirana",
 "Armenia",	
-"Yerevan",
-"Australia", 	
-"Canberra",
 "Austria",	
-"Vienna",
 "Azerbaijan", 	
-"Baku",
 "Belarus",     
-"Minsk",
 "Belgium", 	
-"Brussels",
 "Bulgaria",	
-"Sofia",
-"Canada",	
-"Ottawa",
 "Croatia",
-"Zagreb",
 "Cyprus",
-"Nicosia",
 "Denmark",	
-"Copenhagen",
 "England", 	
-"London",
 "Estonia",	
-"Tallinn",
 "Finland",	
-"Helsinki",
 "France",
-"Paris",
 "Georgia", 	
-"Tbilisi",
 "Germany", 	
-"Berlin",
 "Greece",
-"Athens",
 "Hungary",	
-"Budapest",
-"Iceland",	
-"Reykjavik",
 "Ireland",
-"Dublin",
+"Iceland",	
 "Israel",
-"Jerusalem",
 "Italy",
-"Rome",
 "Latvia",
-"Riga",
 "Luxembourg",
 "Monaco",
 "Netherlands", 	
-"Amsterdam",
 "Norway",
-"Oslo",
 "Poland", 	
-"Warsaw",
 "Portugal", 	
-"Lisbon",
 "Romania",	
-"Bucharest",
 "Russia",
-"Moscow",
 "Scotland", 	
-"Edinburgh",
 "Serbia",
-"Belgrade",
 "Slovakia",	
-"Bratislava",
 "Slovenia",
-"Ljubljana",
 "Spain",
-"Madrid",
 "Sweden",
-"Stockholm",
 "Switzerland", 	
-"Bern",
 "Turkey", 	
-"Ankara",
 "Ukraine",	
-"Kiev",
 "Vatican City",
 "Wales",
-"Cardiff" ]
+
+"Amsterdam",
+"Ankara",
+"Athens",
+"Baku",
+"Belgrade",
+"Berlin",
+"Bern",
+"Bratislava",
+"Brussels",
+"Bucharest",
+"Budapest",
+"Cardiff",
+"Copenhagen",
+"Dublin",
+"Edinburgh",
+"Helsinki",
+"Jerusalem",
+"Kiev",
+"London",
+"Lisbon",
+"Ljubljana",
+"Madrid",
+"Minsk",
+"Moscow",
+"Nicosia",
+"Oslo",
+"Ottawa",
+"Paris",
+"Reykjavik",
+"Riga",
+"Rome",
+"Sofia",
+"Stockholm",
+"Tallinn",
+"Tbilisi",
+"Tirana",
+"Vienna",
+"Warsaw",
+"Yerevan",
+"Zagreb",
+
+ ]
 
 def render_user_message(message):
     st.markdown(
@@ -104,8 +105,8 @@ def render_chatbot_message(message):
 
 def  generate_content(topic):
     prompt = """
-        You are an expert of world knowledge. 
-        Write a short plain text article about this topic: 
+        Write a short plain text article 
+        about this topic: 
         """ +  topic
     response = co.generate(
         prompt=prompt,
@@ -121,21 +122,22 @@ cohere_api_key = st.secrets["cohere_api_key"];
 co = cohere.Client(cohere_api_key)
 
 # Accessing the query parameters
-query_params = st.experimental_get_query_params()
 # Query parameters are returned as a dictionary
+query_params = st.experimental_get_query_params()
 
-# You can access specific parameters like this:
-#  param_value = query_params.get('q', ['default_value'])[0]
-# 'param_name' is the name of your query parameter
-# 'default_value' is a fallback value if the parameter isn't found
+# [""] is a fallback value if the parameter isn't found
+param_values = query_params.get('q', [""]) 
+q = param_values [0]
 
 # initialize the Session State
 if "messages" not in st.session_state:
     st.session_state.messages = []
-if "article" not in st.session_state:
-    st.session_state.article = ""
-if "article_to_display" not in st.session_state:
-    st.session_state.article_to_display = ""
+if "topic" not in st.session_state:
+    st.session_state.topic = ""
+if "article_name" not in st.session_state:
+    st.session_state.article_name = ""
+if "article_text" not in st.session_state:
+    st.session_state.article_text = ""
 
 with st.sidebar:
     # Title 
@@ -145,16 +147,26 @@ generated_content = ""
 
 with st.sidebar:
     # Get Topic
-    topic = st.text_input("Enter a topic:", "")
-    if topic:
-        st.session_state.article = topic
-        st.session_state.article_to_display = topic
+    if not q == "":
+        topic = q
+    else:
+        topic = st.text_input("Enter a topic:", "")
 
-if st.session_state.article_to_display:
-    generated_content = generate_content(st.session_state.article_to_display)
-    st.session_state.article_to_display = ""
-    with st.sidebar:
-        st.markdown(generated_content)
+    if topic:
+        st.session_state.topic = topic
+        if st.session_state.article_text == "":
+            st.session_state.article_name = topic
+    else:
+        st.session_state.article_name = ""
+
+if st.session_state.article_text == "":
+    if not st.session_state.article_name == "":
+        generated_content = generate_content(st.session_state.article_name)
+        st.session_state.article_text = generated_content
+        st.session_state.messages = []
+        # start chat history with the article text
+        st.session_state.article_name = ""
+        st.session_state.messages.append({"role":"CHATBOT","message":st.session_state.article_text})
 
 # iterate through the messages in the Session State
 # and display them in the chat message container
@@ -176,11 +188,11 @@ hint_text = "Say something"
 # check if user made a chat input 
 input_text = st.chat_input(hint_text)
 if input_text:
-    # Display user message
+    # Display the most recent user message
     render_user_message(message = input_text)
     st.write(f"<br>", unsafe_allow_html=True)
 
-    # add message to history
+    # and add it to the list of messages
     st.session_state.messages.append({"role": "USER", "message": input_text})
 
     message_text = """
@@ -209,5 +221,14 @@ if input_text:
     st.session_state.messages.append({"role":"CHATBOT","message":answer})
 
     L = len(st.session_state.messages) 
-    if L > 12:
-        st.session_state.messages = st.session_state.messages[-12:]
+    
+    if L == 0:
+        if not st.session_state.article_text == "":
+            # insert article_text
+            st.session_state.messages.append({"role":"CHATBOT","message":st.session_state.article_text})
+
+    LIMIT = 10
+    if L > LIMIT:
+        # reduced list of messages alwais starts with an article text, if present
+        st.session_state.messages = [st.session_state.article_text] + st.session_state.messages [ - LIMIT:]
+
