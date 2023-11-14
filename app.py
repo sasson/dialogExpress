@@ -175,7 +175,6 @@ def initialize_session_state():
     st.session_state.article_name = ""   # request to generate
     st.session_state.article_text = ""   # generated text
 
-
 cohere_api_key = st.secrets["cohere_api_key"];
 co = cohere.Client(cohere_api_key)
 
@@ -214,14 +213,12 @@ if st.session_state.topic == "":
         st.session_state.article_name = topic_value
         st.session_state.article_text == ""
         st.session_state.messages == []
-else:
-    st.sidebar.title(st.session_state.topic)
 
-    st.write(f"<br>", unsafe_allow_html=True)
+st.sidebar.title(st.session_state.topic)
 
-    # Button to manually clear the text input
-    if st.sidebar.button("New Chat"):
-        initialize_session_state();
+# Button to manually clear the text input
+if st.sidebar.button("New Chat"):
+    initialize_session_state();
 
 url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app/"
 
@@ -229,8 +226,7 @@ if st.session_state.article_text == "":
     if not st.session_state.article_name == "":
         prompt = """.
         Your response should be concise and serious.         
-        Do not end your answer with a question or 'happy to help' stuff.
-        Write a serious plain-text encyclopedia article about the following topic: """ + st.session_state.article_name
+        Write a plain-text encyclopedia article about the following topic: """ + st.session_state.article_name
         generated_content = generate_article(prompt=prompt)
         st.session_state.article_text = generated_content
         st.session_state.messages = []
@@ -270,9 +266,7 @@ if input_text:
 
     message_text = """Act as an AI expert. 
         Continue a nice, informal conversation. 
-        I am going to ask you a question. 
-        Do not end your answer with a question or 'happy to help' stuff.
-        Your response should be concise and serious:         
+        Your response should be both concise and serious:         
         """ +  input_text
     
     response = generate_answer(prompt = message_text, oHistory = st.session_state.messages)
