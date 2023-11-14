@@ -204,17 +204,20 @@ if q:
 
 generated_content = ""
 
-with st.sidebar:
-    if st.session_state.topic == "":
-        # Create a text input widget in the sidebar
-        topic_value = st.sidebar.text_input("Enter a topic", value=st.session_state.topic, key="enter_topic")
+if st.session_state.topic == "":
+    # Create a text input widget in the sidebar
+    topic_value = st.sidebar.text_input("Enter a topic", value=st.session_state.topic, key="enter_topic")
 
-        # Button to manually clear the text input
-        if st.sidebar.button("Set Topic"):
-            st.session_state.topic = topic_value
-            st.session_state.article_name = topic_value
-            st.session_state.article_text == ""
-            st.session_state.messages == []
+    # Button to manually clear the text input
+    if topic_value:
+        st.session_state.topic = topic_value
+        st.session_state.article_name = topic_value
+        st.session_state.article_text == ""
+        st.session_state.messages == []
+else:
+    st.sidebar.title(st.session_state.topic)
+
+    st.write(f"<br>", unsafe_allow_html=True)
 
     # Button to manually clear the text input
     if st.sidebar.button("New Chat"):
@@ -239,19 +242,19 @@ if st.session_state.article_text == "":
 # and display them in the chat message container
 # message["role"] is used because we need to identify user and bot
 
-if len(st.session_state.messages) > 0:
-    for message_object in st.session_state.messages:
-        role = message_object["role"]
-        message = message_object["message"]
+if len(st.session_state.messages) == 0:
+    st.write("Hi!", unsafe_allow_html=True);
 
-        if role == "USER":
-            render_user_message(message = message)
-        elif role == "CHATBOT":
-            render_chatbot_message(message = message)
-        else:
-            st.write(f"UNEXPECTED ROLE {role}")
-else:
-    st.write("Hi!");
+for message_object in st.session_state.messages:
+    role = message_object["role"]
+    message = message_object["message"]
+
+    if role == "USER":
+        render_user_message(message = message)
+    elif role == "CHATBOT":
+        render_chatbot_message(message = message)
+    else:
+        st.write(f"UNEXPECTED ROLE {role}", unsafe_allow_html=True)
 
 hint_text = "Say something"
 
