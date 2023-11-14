@@ -3,5 +3,7 @@ cohere
 numpy
 pyyaml
 typing
+langchain
+
 
 

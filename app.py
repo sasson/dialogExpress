@@ -2,8 +2,6 @@ import streamlit as st
 import cohere
 import random
 
-url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app/"
-
 def get_topics():
     oList = [
 "Albania",
@@ -103,22 +101,69 @@ def render_chatbot_message(message):
         f"<div style='text-align: left; margin-right:50px; color: #111111; padding: 10px; border-radius: 5px;'>{message}</div><br>",        unsafe_allow_html=True
     )
 
-def  generate_content(topic):
-    prompt = """Write a short plain-text encycloopedia article 
-        about this topic: 
-        """ +  topic + """ 
-        Article:
-        """
-    response = co.generate(
-        model="command-nightly",
-        prompt=prompt,
-        temperature=0.0,
-        num_generations=1,
-        max_tokens=1600
+oPages = [  
+        {  
+            "id": "web-search_1",  
+            "title": "Miami Real Estate",  
+            "snippet": "Miami-Dade county has some of the most beautiful neighborhoods in South Florida. Golfing, sailing, boating, beach life, night life, luxury shopping and dining, natural parks, are just a few of the amenities found in Miami's amazing communities!",  
+            "url": "https://www.miamirealestate.com"  
+        },  
+        {  
+            "id": "web-search_2",  
+            "title": "Maiami Real Estate - Luxury Listings",  
+            "snippet": "Let Us Help You Find Your Place In The World.",  
+            "url": "https://www.miamirealestate.com/miami-luxury-listings/"  
+        },  
+        {  
+            "id": "web-search_3",  
+            "title": "Maiami Real Estate - A Day In Miami",  
+            "snippet": "Take pleasure in an early morning walk along miles of white sand beaches and delight in the melodic lapping waves of the blue Atlantic Ocean along the shoreline.",  
+            "url": "https://www.miamirealestate.com/miami-living/"  
+        },  
+        {  
+            "id": "web-search_4",  
+            "title": "Maiami Real Estate - For Buyers",  
+            "snippet": "Many exclusive homes never make it to the MLS service, because the agents who represent the sellers introduce the property selectively. Agents who are familiar with the luxury market know that finding a buyer is often a matter of great detective work. For every upscale home, there is an ideal buyer among a target group with a high probability of interest in such a property.",  
+            "url": "https://www.miamirealestate.com/for-buyers/"  
+        },  
+        {  
+            "id": "web-search_5",  
+            "title": "Maiami Real Estate - Our Company",  
+            "snippet": "Our goal is to provide the ultimate in professional residential and commercial real estate service to the most affluent customers, focusing on properties in the upper level marketplace which serve the needs of a sophisticated clientele.",  
+            "url": "https://www.miamirealestate.com/our-company/"  
+        }  
+    ]
+
+
+def  generate_article(prompt : str):
+    response = co.chat(
+        stream=False,
+        max_tokens=800,
+        message=prompt,
+        model="command-nightly", 
+        temperature=0.5,
+        prompt_truncation='auto',
+        documents=oPages,      
     )
 
-    generated_content = response.generations[0].text
-    
+    generated_content = response.text
+    return  generated_content
+
+
+
+def  generate_answer(prompt : str, oHistory: list = []):
+    response = co.chat(
+        chat_history=st.session_state.messages,
+        stream=False,
+        max_tokens=800,
+        message=prompt,
+        model="command-nightly", 
+        temperature=0.5,
+        prompt_truncation='auto',
+        documents=oPages,      
+    )
+
+    generated_content = response.text
     return  generated_content
 
 def clear_input():
@@ -157,31 +202,33 @@ if q:
     st.session_state.topic = q
     st.session_state.article_name = q
 
-
 generated_content = ""
 
 with st.sidebar:
-    # Title 
-    st.title("FunCycloPedia")
-
     if st.session_state.topic == "":
         # Create a text input widget in the sidebar
-        input_value = st.sidebar.text_input("Enter a topic", value=st.session_state.topic, key="enter_topic")
+        topic_value = st.sidebar.text_input("Enter a topic", value=st.session_state.topic, key="enter_topic")
 
-        if input_value:
-            st.session_state.topic = input_value
-            st.session_state.article_name = input_value
+        # Button to manually clear the text input
+        if st.sidebar.button("Set Topic"):
+            st.session_state.topic = topic_value
+            st.session_state.article_name = topic_value
             st.session_state.article_text == ""
-        else:
-            st.session_state.article_name = ""
+            st.session_state.messages == []
 
     # Button to manually clear the text input
     if st.sidebar.button("New Chat"):
         initialize_session_state();
 
+url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app/"
+
 if st.session_state.article_text == "":
     if not st.session_state.article_name == "":
-        generated_content = generate_content(st.session_state.article_name)
+        prompt = """.
+        Your response should be concise and serious.         
+        Do not end your answer with a question or 'happy to help' stuff.
+        Write a serious plain-text encyclopedia article about the following topic: """ + st.session_state.article_name
+        generated_content = generate_article(prompt=prompt)
         st.session_state.article_text = generated_content
         st.session_state.messages = []
         # start chat history with the article text
@@ -192,16 +239,19 @@ if st.session_state.article_text == "":
 # and display them in the chat message container
 # message["role"] is used because we need to identify user and bot
 
-for message_object in st.session_state.messages:
-    role = message_object["role"]
-    message = message_object["message"]
+if len(st.session_state.messages) > 0:
+    for message_object in st.session_state.messages:
+        role = message_object["role"]
+        message = message_object["message"]
 
-    if role == "USER":
-        render_user_message(message = message)
-    elif role == "CHATBOT":
-        render_chatbot_message(message = message)
-    else:
-        st.write(f"UNEXPECTED ROLE {role}")
+        if role == "USER":
+            render_user_message(message = message)
+        elif role == "CHATBOT":
+            render_chatbot_message(message = message)
+        else:
+            st.write(f"UNEXPECTED ROLE {role}")
+else:
+    st.write("Hi!");
 
 hint_text = "Say something"
 
@@ -215,28 +265,22 @@ if input_text:
     # and add it to the list of messages
     st.session_state.messages.append({"role": "USER", "message": input_text})
 
-    message_text = """You are a friendly AI and an expert of world knowledge. 
-        Continue a nice, informal conversation, with short answers. 
+    message_text = """Act as an AI expert. 
+        Continue a nice, informal conversation. 
         I am going to ask you a question. 
-        Your response should be concise but fun and friendly:        
+        Do not end your answer with a question or 'happy to help' stuff.
+        Your response should be concise and serious:         
         """ +  input_text
-    response = co.chat(
-        chat_history=st.session_state.messages,
-        max_tokens=800,
-        message=message_text,
-        model="command-nightly", 
-	    temperature=1.0,
-        prompt_truncation='auto',
-        connectors=[{"id": "web-search"}]
-    )
+    
+    response = generate_answer(prompt = message_text, oHistory = st.session_state.messages)
 
-    answer = response.text
+    answer = response
 
     render_chatbot_message(message = answer)
     st.write(f"<br>", unsafe_allow_html=True)
 
     # add the echo message to chat history
-    st.session_state.messages.append({"role":"CHATBOT","message":answer})
+    st.session_state.messages.append( {"role":"CHATBOT","message":answer} )
 
     L = len(st.session_state.messages) 
     
