@@ -101,79 +101,129 @@ def render_chatbot_message(message):
         f"<div style='text-align: left; margin-right:50px; color: #111111; padding: 10px; border-radius: 5px;'>{message}</div><br>",        unsafe_allow_html=True
     )
 
-oPages = [  
-        {  
-            "id": "web-search_1",  
-            "title": "Miami Real Estate",  
-            "snippet": "Miami-Dade county has some of the most beautiful neighborhoods in South Florida. Golfing, sailing, boating, beach life, night life, luxury shopping and dining, natural parks, are just a few of the amenities found in Miami's amazing communities!",  
-            "url": "https://www.miamirealestate.com"  
-        },  
-        {  
-            "id": "web-search_2",  
-            "title": "Maiami Real Estate - Luxury Listings",  
-            "snippet": "Let Us Help You Find Your Place In The World.",  
-            "url": "https://www.miamirealestate.com/miami-luxury-listings/"  
-        },  
-        {  
-            "id": "web-search_3",  
-            "title": "Maiami Real Estate - A Day In Miami",  
-            "snippet": "Take pleasure in an early morning walk along miles of white sand beaches and delight in the melodic lapping waves of the blue Atlantic Ocean along the shoreline.",  
-            "url": "https://www.miamirealestate.com/miami-living/"  
-        },  
-        {  
-            "id": "web-search_4",  
-            "title": "Maiami Real Estate - For Buyers",  
-            "snippet": "Many exclusive homes never make it to the MLS service, because the agents who represent the sellers introduce the property selectively. Agents who are familiar with the luxury market know that finding a buyer is often a matter of great detective work. For every upscale home, there is an ideal buyer among a target group with a high probability of interest in such a property.",  
-            "url": "https://www.miamirealestate.com/for-buyers/"  
-        },  
-        {  
-            "id": "web-search_5",  
-            "title": "Maiami Real Estate - Our Company",  
-            "snippet": "Our goal is to provide the ultimate in professional residential and commercial real estate service to the most affluent customers, focusing on properties in the upper level marketplace which serve the needs of a sophisticated clientele.",  
-            "url": "https://www.miamirealestate.com/our-company/"  
-        }  
-    ]
+def register_concepts(citations : list):
+    oConcepts = []
+    
+    if citations:
+        for oConcept in citations:
+            a = oConcept["text"]
+            if len(a) >= 6 and len(a) <= 16:
+                oConcepts.append(a)
 
+    st.session_state.concepts = oConcepts
 
 def  generate_article(prompt : str):
-    response = co.chat(
-        stream=False,
-        max_tokens=800,
-        message=prompt,
-        model="command-nightly", 
-        temperature=0.5,
-        prompt_truncation='auto',
-        documents=oPages,      
-    )
+    if st.session_state.pages == []:
+        response = co.chat(
+            stream=False,
+            max_tokens=800,
+            message=prompt,
+            model="command-nightly", 
+            temperature=2.5,
+            prompt_truncation='auto',
+            connectors=[{"id": "web-search"}],      
+        )
+    else:
+        response = co.chat(
+            stream=False,
+            max_tokens=800,
+            message=prompt,
+            model="command-nightly", 
+            temperature=2.5,
+            prompt_truncation='auto',
+            documents=st.session_state.pages,      
+        )
 
+    register_concepts(response.citations)
     generated_content = response.text
+
     return  generated_content
 
 
-
 def  generate_answer(prompt : str, oHistory: list = []):
-    response = co.chat(
-        chat_history=st.session_state.messages,
-        stream=False,
-        max_tokens=800,
-        message=prompt,
-        model="command-nightly", 
-        temperature=0.5,
-        prompt_truncation='auto',
-        documents=oPages,      
-    )
+    if st.session_state.pages == []:
+        response = co.chat(
+            chat_history=st.session_state.messages,
+            stream=False,
+            max_tokens=800,
+            message=prompt,
+            model="command-nightly", 
+            temperature=2.5,
+            prompt_truncation='auto',
+            connectors=[{"id": "web-search"}],      
+        )
 
+    else:
+        response = co.chat(
+            chat_history=st.session_state.messages,
+            stream=False,
+            max_tokens=800,
+            message=prompt,
+            model="command-nightly", 
+            temperature=2.5,
+            prompt_truncation='auto',
+            documents=st.session_state.pages,      
+        )
+
+    register_concepts(response.citations)
     generated_content = response.text
+
     return  generated_content
 
 def clear_input():
     st.session_state.enter_topic = ""
 
-def initialize_session_state():
-    st.session_state.messages = []
-    st.session_state.topic = ""
-    st.session_state.article_name = ""   # request to generate
+def display_concepts():
+    if len(st.session_state.concepts) > 0:
+        for concept in st.session_state.concepts:
+            click = st.sidebar.button(concept)
+            if click:
+                initialize_session_state(q = click)
+
+def initialize_session_state(q):
+    st.session_state.topic = q
+    st.session_state.article_name = q    # request to generate an article
     st.session_state.article_text = ""   # generated text
+    st.session_state.concepts = []
+    st.session_state.messages = []
+
+
+    if isinstance(q, str) and "Miami" in q:
+        st.session_state.pages = [  
+            {  
+                "id": "web-search_1",  
+                "title": "Miami Real Estate",  
+                "snippet": "Miami-Dade county has some of the most beautiful neighborhoods in South Florida. Golfing, sailing, boating, beach life, night life, luxury shopping and dining, natural parks, are just a few of the amenities found in Miami's amazing communities!",  
+                "url": "https://www.miamirealestate.com"  
+            },  
+            {  
+                "id": "web-search_2",  
+                "title": "Maiami Real Estate - Luxury Listings",  
+                "snippet": "Let Us Help You Find Your Place In The World.",  
+                "url": "https://www.miamirealestate.com/miami-luxury-listings/"  
+            },  
+            {  
+                "id": "web-search_3",  
+                "title": "Maiami Real Estate - A Day In Miami",  
+                "snippet": "Take pleasure in an early morning walk along miles of white sand beaches and delight in the melodic lapping waves of the blue Atlantic Ocean along the shoreline.",  
+                "url": "https://www.miamirealestate.com/miami-living/"  
+            },  
+            {  
+                "id": "web-search_4",  
+                "title": "Maiami Real Estate - For Buyers",  
+                "snippet": "Many exclusive homes never make it to the MLS service, because the agents who represent the sellers introduce the property selectively. Agents who are familiar with the luxury market know that finding a buyer is often a matter of great detective work. For every upscale home, there is an ideal buyer among a target group with a high probability of interest in such a property.",  
+                "url": "https://www.miamirealestate.com/for-buyers/"  
+            },  
+            {  
+                "id": "web-search_5",  
+                "title": "Maiami Real Estate - Our Company",  
+                "snippet": "Our goal is to provide the ultimate in professional residential and commercial real estate service to the most affluent customers, focusing on properties in the upper level marketplace which serve the needs of a sophisticated clientele.",  
+                "url": "https://www.miamirealestate.com/our-company/"  
+            }  
+        ]
+    else:
+        st.session_state.pages = [];
+
 
 cohere_api_key = st.secrets["cohere_api_key"];
 co = cohere.Client(cohere_api_key)
@@ -187,21 +237,15 @@ param_values = query_params.get('q', [""])
 q = param_values [0]
 
 # initialize variable in session state
-if "messages" not in st.session_state:
-    initialize_session_state();
+if "messages" not in st.session_state or "concepts" not in st.session_state :
+    initialize_session_state(q = q);
 
-if "topic" not in st.session_state:
-    st.session_state.topic = ""
-if "article_name" not in st.session_state:
-    st.session_state.article_name = ""
-if "article_text" not in st.session_state:
-    st.session_state.article_text = ""
-
-if q:
-    st.session_state.topic = q
-    st.session_state.article_name = q
-
+st.session_state.topic = q
+st.session_state.article_name = q
 generated_content = ""
+
+if isinstance(st.session_state.topic, str):
+    st.sidebar.title(st.session_state.topic)
 
 if st.session_state.topic == "":
     # Create a text input widget in the sidebar
@@ -214,19 +258,13 @@ if st.session_state.topic == "":
         st.session_state.article_text == ""
         st.session_state.messages == []
 
-st.sidebar.title(st.session_state.topic)
-
-# Button to manually clear the text input
-if st.sidebar.button("New Chat"):
-    initialize_session_state();
-
 url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app/"
 
 if st.session_state.article_text == "":
     if not st.session_state.article_name == "":
         prompt = """.
         Your response should be concise and serious.         
-        Write a plain-text encyclopedia article about the following topic: """ + st.session_state.article_name
+        Write a plain-text encyclopedia article about the following subject: """ + st.session_state.article_name
         generated_content = generate_article(prompt=prompt)
         st.session_state.article_text = generated_content
         st.session_state.messages = []
@@ -234,12 +272,11 @@ if st.session_state.article_text == "":
         st.session_state.messages.append({"role":"CHATBOT","message":st.session_state.article_text})
         st.session_state.article_name = ""
 
+display_concepts()
+
 # iterate through the messages in the Session State
 # and display them in the chat message container
 # message["role"] is used because we need to identify user and bot
-
-if len(st.session_state.messages) == 0:
-    st.write("Hi!", unsafe_allow_html=True);
 
 for message_object in st.session_state.messages:
     role = message_object["role"]
