@@ -2,93 +2,6 @@ import streamlit as st
 import cohere
 import random
 
-def get_topics():
-    oList = [
-"Albania",
-"Armenia",	
-"Austria",	
-"Azerbaijan", 	
-"Belarus",     
-"Belgium", 	
-"Bulgaria",	
-"Croatia",
-"Cyprus",
-"Denmark",	
-"England", 	
-"Estonia",	
-"Finland",	
-"France",
-"Georgia", 	
-"Germany", 	
-"Greece",
-"Hungary",	
-"Ireland",
-"Iceland",	
-"Israel",
-"Italy",
-"Latvia",
-"Luxembourg",
-"Monaco",
-"Netherlands", 	
-"Norway",
-"Poland", 	
-"Portugal", 	
-"Romania",	
-"Russia",
-"Scotland", 	
-"Serbia",
-"Slovakia",	
-"Slovenia",
-"Spain",
-"Sweden",
-"Switzerland", 	
-"Turkey", 	
-"Ukraine",	
-"Vatican City",
-"Wales",
-
-"Amsterdam",
-"Ankara",
-"Athens",
-"Baku",
-"Belgrade",
-"Berlin",
-"Bern",
-"Bratislava",
-"Brussels",
-"Bucharest",
-"Budapest",
-"Cardiff",
-"Copenhagen",
-"Dublin",
-"Edinburgh",
-"Helsinki",
-"Jerusalem",
-"Kiev",
-"London",
-"Lisbon",
-"Ljubljana",
-"Madrid",
-"Minsk",
-"Moscow",
-"Nicosia",
-"Oslo",
-"Ottawa",
-"Paris",
-"Reykjavik",
-"Riga",
-"Rome",
-"Sofia",
-"Stockholm",
-"Tallinn",
-"Tbilisi",
-"Tirana",
-"Vienna",
-"Warsaw",
-"Yerevan",
-"Zagreb",
-
- ]
 
 def render_user_message(message):
     st.markdown(
@@ -113,7 +26,8 @@ def register_concepts(citations : list):
     st.session_state.concepts = oConcepts
 
 def  generate_article(prompt : str):
-    if st.session_state.pages == []:
+    """
+    if st.session_state.ch == "":
         response = co.chat(
             stream=False,
             max_tokens=800,
@@ -124,106 +38,53 @@ def  generate_article(prompt : str):
             connectors=[{"id": "web-search"}],      
         )
     else:
-        response = co.chat(
+        response = co.chat  (
             stream=False,
             max_tokens=800,
             message=prompt,
             model="command-nightly", 
             temperature=2.5,
             prompt_truncation='auto',
-            documents=st.session_state.pages,      
+            connectors= [
+                            { "id": "web-search", "options": { "site": st.session_state.ch } } 
+                        ]      
         )
 
     register_concepts(response.citations)
     generated_content = response.text
+    """
 
-    return  generated_content
-
+    return  ""    # generated_content
 
 def  generate_answer(prompt : str, oHistory: list = []):
-    if st.session_state.pages == []:
-        response = co.chat(
-            chat_history=st.session_state.messages,
-            stream=False,
-            max_tokens=800,
-            message=prompt,
-            model="command-nightly", 
-            temperature=2.5,
-            prompt_truncation='auto',
-            connectors=[{"id": "web-search"}],      
-        )
-
-    else:
-        response = co.chat(
-            chat_history=st.session_state.messages,
-            stream=False,
-            max_tokens=800,
-            message=prompt,
-            model="command-nightly", 
-            temperature=2.5,
-            prompt_truncation='auto',
-            documents=st.session_state.pages,      
-        )
+    """
+    response = co.chat(
+        chat_history=st.session_state.messages,
+        stream=False,
+        max_tokens=800,
+        message=prompt,
+        model="command-nightly", 
+        temperature=2.5,
+        prompt_truncation='auto',
+        connectors=[{"id": "web-search"}],      
+    )
 
     register_concepts(response.citations)
-    generated_content = response.text
+    """
+    generated_content = ""  # response.text
 
     return  generated_content
 
 def clear_input():
     st.session_state.enter_topic = ""
 
-def display_concepts():
-    if len(st.session_state.concepts) > 0:
-        for concept in st.session_state.concepts:
-            click = st.sidebar.button(concept)
-            if click:
-                initialize_session_state(q = click)
-
-def initialize_session_state(q):
+def initialize_session_state(ch : str, q : str):
+    st.session_state.ch = ch
     st.session_state.topic = q
     st.session_state.article_name = q    # request to generate an article
     st.session_state.article_text = ""   # generated text
     st.session_state.concepts = []
     st.session_state.messages = []
-
-
-    if isinstance(q, str) and "Miami" in q:
-        st.session_state.pages = [  
-            {  
-                "id": "web-search_1",  
-                "title": "Miami Real Estate",  
-                "snippet": "Miami-Dade county has some of the most beautiful neighborhoods in South Florida. Golfing, sailing, boating, beach life, night life, luxury shopping and dining, natural parks, are just a few of the amenities found in Miami's amazing communities!",  
-                "url": "https://www.miamirealestate.com"  
-            },  
-            {  
-                "id": "web-search_2",  
-                "title": "Maiami Real Estate - Luxury Listings",  
-                "snippet": "Let Us Help You Find Your Place In The World.",  
-                "url": "https://www.miamirealestate.com/miami-luxury-listings/"  
-            },  
-            {  
-                "id": "web-search_3",  
-                "title": "Maiami Real Estate - A Day In Miami",  
-                "snippet": "Take pleasure in an early morning walk along miles of white sand beaches and delight in the melodic lapping waves of the blue Atlantic Ocean along the shoreline.",  
-                "url": "https://www.miamirealestate.com/miami-living/"  
-            },  
-            {  
-                "id": "web-search_4",  
-                "title": "Maiami Real Estate - For Buyers",  
-                "snippet": "Many exclusive homes never make it to the MLS service, because the agents who represent the sellers introduce the property selectively. Agents who are familiar with the luxury market know that finding a buyer is often a matter of great detective work. For every upscale home, there is an ideal buyer among a target group with a high probability of interest in such a property.",  
-                "url": "https://www.miamirealestate.com/for-buyers/"  
-            },  
-            {  
-                "id": "web-search_5",  
-                "title": "Maiami Real Estate - Our Company",  
-                "snippet": "Our goal is to provide the ultimate in professional residential and commercial real estate service to the most affluent customers, focusing on properties in the upper level marketplace which serve the needs of a sophisticated clientele.",  
-                "url": "https://www.miamirealestate.com/our-company/"  
-            }  
-        ]
-    else:
-        st.session_state.pages = [];
-
 
 cohere_api_key = st.secrets["cohere_api_key"];
 co = cohere.Client(cohere_api_key)
@@ -233,13 +94,16 @@ co = cohere.Client(cohere_api_key)
 query_params = st.experimental_get_query_params()
 
 # [""] is a fallback value if the parameter isn't found
-param_values = query_params.get('q', [""]) 
-q = param_values [0]
+param_values1 = query_params.get('q', [""]) 
+q = param_values1 [0]
+param_values2 = query_params.get('ch', [""]) 
+ch = param_values2 [0]
 
 # initialize variable in session state
-if "messages" not in st.session_state or "concepts" not in st.session_state :
-    initialize_session_state(q = q);
+if "messages" not in st.session_state and "concepts" not in st.session_state :
+    initialize_session_state(ch = ch, q = q)
 
+st.session_state.ch = ch
 st.session_state.topic = q
 st.session_state.article_name = q
 generated_content = ""
@@ -248,13 +112,9 @@ if isinstance(st.session_state.topic, str):
     st.sidebar.title(st.session_state.topic)
 
 if st.session_state.topic == "":
-    # Create a text input widget in the sidebar
-    topic_value = st.sidebar.text_input("Enter a topic", value=st.session_state.topic, key="enter_topic")
-
-    # Button to manually clear the text input
-    if topic_value:
-        st.session_state.topic = topic_value
-        st.session_state.article_name = topic_value
+    if q:
+        st.session_state.topic = q
+        st.session_state.article_name = q
         st.session_state.article_text == ""
         st.session_state.messages == []
 
@@ -272,7 +132,6 @@ if st.session_state.article_text == "":
         st.session_state.messages.append({"role":"CHATBOT","message":st.session_state.article_text})
         st.session_state.article_name = ""
 
-display_concepts()
 
 # iterate through the messages in the Session State
 # and display them in the chat message container
@@ -306,9 +165,9 @@ if input_text:
         Your response should be both concise and serious:         
         """ +  input_text
     
-    response = generate_answer(prompt = message_text, oHistory = st.session_state.messages)
+    # response = generate_answer(prompt = message_text, oHistory = st.session_state.messages)
 
-    answer = response
+    answer = ""   # response
 
     render_chatbot_message(message = answer)
     st.write(f"<br>", unsafe_allow_html=True)
