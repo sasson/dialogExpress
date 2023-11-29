@@ -12,7 +12,6 @@ page_channel = "inner.org"
 # Query parameters are returned as a dictionary
 query_params = st.experimental_get_query_params()
 
-st.sidebar.write("inner.org")
 # [""] is a fallback value if the parameter isn't found
 param_values = query_params.get('q', [""]) 
 q = param_values [0]

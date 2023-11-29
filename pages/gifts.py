@@ -12,8 +12,6 @@ page_channel ="amazon.com"
 # Query parameters are returned as a dictionary
 query_params = st.experimental_get_query_params()
 
-st.sidebar.write("amazon.com")
-
 # [""] is a fallback value if the parameter isn't found
 param_values = query_params.get('q', [""]) 
 q = param_values [0]

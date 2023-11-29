@@ -108,7 +108,6 @@ class Agent:
                 html = self.generate_html_for_result(result)
                 result_html += "<br>" + html + "<br>"
                 urls.append(url)
-        result_html += "<br>"
 
         return  result_html
 
@@ -123,8 +122,8 @@ class Agent:
     
     def render_chatbot_message(self):
         oText = Text(generated_content = self.generated_content, concepts = self.concepts)
-        st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
         st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
+        st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
 
     def render_messages(self):
         for message_object in self.messages:

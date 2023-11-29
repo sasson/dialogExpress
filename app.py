@@ -42,10 +42,9 @@ if input_text:
 
     st.write(f"<br>", unsafe_allow_html=True)
 
-    prompt = f"""You are an Innovative Dialog Search Engine for Linguistic AI only.
+    prompt = f"""You are an Innovative Dialog Search Engine.
 Please, keep conversation friendly and concise and 'safe for work'.  
-Please write a short encyclopedia article from Linguistic AI perspective
-describing what is found. """ 
+Please answer describing what was found . """ 
 
     answer_text = agent.generate_answer(prompt = prompt, input_text = input_text)
 
