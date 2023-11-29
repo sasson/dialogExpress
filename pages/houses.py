@@ -6,7 +6,7 @@ from agents import Agent
 def initialize_session_state(ch : str, q : str):
     st.session_state.agent = Agent(ch = ch, q = q)
 
-page_channel ="amazon.com"
+page_channel ="zillow.com"
 
 # Accessing the query parameters
 # Query parameters are returned as a dictionary
@@ -18,7 +18,7 @@ q = param_values [0]
 
 # initialize variable in session state
 if "agent" not in st.session_state:
-    initialize_session_state(ch = "", q = q)
+    initialize_session_state(ch = page_channel, q = q)
 
     # curl = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app/"
 

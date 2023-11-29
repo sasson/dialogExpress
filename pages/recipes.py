@@ -6,7 +6,7 @@ from agents import Agent
 def initialize_session_state(ch : str, q : str):
     st.session_state.agent = Agent(ch = ch, q = q)
 
-page_channel ="zillow.com"
+page_channel =""
 
 # Accessing the query parameters
 # Query parameters are returned as a dictionary
