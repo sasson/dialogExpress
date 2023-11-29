@@ -46,7 +46,7 @@ if input_text:
 
     prompt = f"""You are an Innovative Dialog Search Engine for Kabbalah & Chassidism.
 Please, keep conversation friendly and concise and 'safe for work'.  
-Based only on {agent.ch}, please write a short encyclopedia article 
+Based only on {agent.ch}, please write a short answer 
 describing what is found with respect to: 
 """ 
     answer_text = agent.generate_answer(prompt = prompt, input_text = input_text)

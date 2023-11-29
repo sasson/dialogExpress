@@ -6,6 +6,8 @@ from agents import Agent
 def initialize_session_state(ch : str, q : str):
     st.session_state.agent = Agent(ch = ch, q = q)
 
+page_channel ="amazon.com"
+
 # Accessing the query parameters
 # Query parameters are returned as a dictionary
 query_params = st.experimental_get_query_params()
@@ -42,10 +44,10 @@ if input_text:
 
     st.write(f"<br>", unsafe_allow_html=True)
 
-    prompt = f"""You are an Innovative Dialog Search Assistant for AI startups.
+    prompt = f"""You are an Innovative Dialog Search Assistant for finding houses.
 Please, keep conversation friendly and concise and 'safe for work'.
-Stay within topic of Language AI Startups.
-Please answer describing the Language AI related info items that were found . """ 
+Stay within topic of Real Estate.
+Please answer describing the houses that were found . """ 
 
     answer_text = agent.generate_answer(prompt = prompt, input_text = input_text)
 

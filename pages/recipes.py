@@ -6,6 +6,8 @@ from agents import Agent
 def initialize_session_state(ch : str, q : str):
     st.session_state.agent = Agent(ch = ch, q = q)
 
+page_channel ="zillow.com"
+
 # Accessing the query parameters
 # Query parameters are returned as a dictionary
 query_params = st.experimental_get_query_params()
@@ -15,8 +17,8 @@ param_values = query_params.get('q', [""])
 q = param_values [0]
 
 # initialize variable in session state
-if "agent" not in st.session_state:
-    initialize_session_state(ch = "", q = q)
+if "agent" not in st.session_state or st.session_state.agent.ch != page_channel:
+    initialize_session_state(ch = page_channel, q = q)
 
     # curl = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app/"
 
@@ -42,10 +44,11 @@ if input_text:
 
     st.write(f"<br>", unsafe_allow_html=True)
 
-    prompt = f"""You are an Innovative Dialog Search Assistant for AI startups.
-Please, keep conversation friendly and concise and 'safe for work'.
-Stay within topic of Language AI Startups.
-Please answer describing the Language AI related info items that were found . """ 
+    prompt = f"""
+        You are an Intelligent Search Assistant helping to find kosher food recipes.
+        Please, keep conversation friendly and 'safe for work'.  
+        Please write a short response describing which recipes were found for    
+    """ 
 
     answer_text = agent.generate_answer(prompt = prompt, input_text = input_text)
 
