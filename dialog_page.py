@@ -84,8 +84,10 @@ class DialogPage():
             <a href="{url}" 
                style="color:#blue; font-weight:bold; " 
                target="_blank" 
-               title={description}
             >{title}</a>
+        </div>
+        <div>
+            {description}
         </div>
         """
 
