@@ -1,62 +1,30 @@
 import streamlit as st
-import cohere
-import random
-from agents import Agent
+from dialog_page import DialogPage
 
-def initialize_session_state(ch : str, q : str):
-    st.session_state.agent = Agent(ch = ch, q = q)
+page_name = "app"
+page_channel = ""
+base_url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app"
 
-# Accessing the query parameters
-# Query parameters are returned as a dictionary
-query_params = st.experimental_get_query_params()
+if not "page" in st.session_state or not st.session_state.page.page_name == page_name:
+    st.session_state.page = DialogPage(page_name = page_name, page_channel = page_channel)
 
-# [""] is a fallback value if the parameter isn't found
-param_values = query_params.get('q', [""]) 
-q = param_values [0]
+page = st.session_state.page
 
-# initialize variable in session state
-if "agent" not in st.session_state:
-    initialize_session_state(ch = "", q = q)
-
-    # curl = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app/"
-
-agent = st.session_state.agent
-if isinstance(agent.ch, str):
-    st.sidebar.title(agent.ch)
-
-# iterate through the messages in the Session State
-# and display them in the chat message container
-# message["role"] is used because we need to identify user and bot
-st.session_state.agent.render_messages()
-
-# check if user made a chat input 
-hint_text = "Say something"
-input_text = st.chat_input(hint_text, key="chat_input")
-if input_text:
-    agent = st.session_state.agent 
-
-    # Display the most recent user message
-    # and add it to the list of messages
-    agent.render_user_message(message = input_text)
-    agent.messages.append({"role": "USER", "message": input_text})
-
-    st.write(f"<br>", unsafe_allow_html=True)
-
-    prompt = f"""You are an Innovative Dialog Search Assistant for AI startups.
+page.initialize(page_name = page_name, page_channel = page_channel, prompt = f"""
 Please, keep conversation friendly and concise and 'safe for work'.
-Stay within topic of Language AI Startups.
-Please answer describing the Language AI related info items that were found . """ 
+Please answer describing the found info items that were found. 
+The question:   
+""" 
+)
 
-    answer_text = agent.generate_answer(prompt = prompt, input_text = input_text)
+# display agent's channel in the sidebar
+#if isinstance(page_name, str):
+#    st.sidebar.title(page.page_name)
+#    st.sidebar.write(page.page_channel)
 
-    # add the answer to chat history
-    agent.messages.append( {"role":"CHATBOT", "message":answer_text} )
+page.render_messages()
 
-    st.write(f"<br>", unsafe_allow_html=True)
-    agent.render_chatbot_message()
-
-
-    # reduce the list of messages 
-    LIMIT = 10
-    if len(st.session_state.agent.messages) > LIMIT:
-        st.session_state.agent.messages = st.session_state.agent.messages [-LIMIT:]
+# check if user made a chat input
+input_text = st.chat_input("Say something", key="chat_input")
+if input_text:    
+    page.on_input(input_text = input_text)
