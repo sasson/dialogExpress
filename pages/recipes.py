@@ -1,5 +1,5 @@
 import streamlit as st
-from dialog_page import DialogPage, remove_query_parameters
+from dialog_page import DialogPage
 
 page_name = "recipes"
 page_channel = ""
@@ -19,7 +19,6 @@ Question:
 # display channel name and domain in the sidebar
 if isinstance(page_name, str):
     st.sidebar.title(page.page_name)
-    st.sidebar.write(page.page_channel)
 
 page.render_messages()
 
@@ -28,4 +27,3 @@ input_text = st.chat_input("Say something", key="chat_input")
 if input_text:    
     page.on_input(input_text = input_text)
 
-remove_query_parameters()

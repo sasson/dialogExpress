@@ -81,8 +81,8 @@ class DialogPage():
         # Using a list comprehension for efficiency
         result = ''.join([char if char.isalnum() else ' ' for char in s])
         result = result.replace("  ", " ").strip()
-        if len(result) > 100:
-            result = result[:100]
+        if len(result) > 250:
+            result = result[:250]
 
         return  result
 
@@ -170,19 +170,11 @@ class DialogPage():
             st.write(f"UNEXPECTED ROLE {role}", unsafe_allow_html=True)
 
     # iterate through the messages in the Session State
-    # and display them in the chat message container
+    # and display them in the chat message container ?
     def render_messages(self):
-        st.title(self.agent.start)
-        st.write("")
+        st.sidebar.write("")
+        st.sidebar.write(self.agent.start)
+
         for message_object in self.agent.messages:
             self.render_message(message_object)
 
-def remove_query_parameters():
-    js = """
-    <script>
-    const url = new URL(window.location);
-    url.search = ''; // Remove query parameters
-    window.history.replaceState({}, document.title, url);
-    </script>
-    """
-    st.markdown(js, unsafe_allow_html=True)
