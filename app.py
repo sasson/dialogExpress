@@ -2,7 +2,7 @@ import streamlit as st
 from dialog_page import DialogPage
 
 page_name = "app"
-page_channel = "simple.wikipedia.org"
+page_channel = "StoneAlgo.com"
 
 base_url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app"
 DialogPage.start(page_name = page_name, page_channel = page_channel)
