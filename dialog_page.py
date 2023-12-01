@@ -4,6 +4,18 @@ from text import Text
 from agents import Agent
 
 class DialogPage():
+    @staticmethod
+    def start(page_name : str, page_channel : str):
+        if not "page" in st.session_state:
+            st.session_state.ignore_q = False
+            st.session_state.page = DialogPage(page_name = page_name, page_channel = page_channel)
+
+        if st.session_state.page.page_name == page_name:
+            st.session_state.ignore_q = False
+        else:
+            st.session_state.ignore_q = True
+            st.session_state.page = DialogPage(page_name = page_name, page_channel = page_channel)
+
     def __init__(self, page_name: str, page_channel: str = "", prompt: str = ""):
         self.page_name = page_name
         self.page_channel = page_channel
@@ -11,15 +23,16 @@ class DialogPage():
         self.agent = None
 
     def initialize(self, page_name : str, page_channel : str, prompt : str):
-        if page_name == self.page_name:
+        if st.session_state.ignore_q:
+            # switching to a new, different page by clicking on the left sidebar
+            new_start = ""
+        else: 
             # Accessing the query parameters
             # Query parameters are returned as a dictionary
             query_params = st.experimental_get_query_params()
             # [""] is a fallback value if the parameter isn't found
             param_values = query_params.get('q', [""]) 
             new_start = param_values [0]
-        else:
-            new_start = ""
 
         self.prompt = prompt
 
@@ -33,7 +46,7 @@ class DialogPage():
             self.agent.start = new_start
             needs_starting_answer = True
 
-        if needs_starting_answer and not new_start == "":
+        if needs_starting_answer and not new_start == "" and not st.session_state.ignore_q:
             answer_text = self.agent.generate_answer(prompt = self.prompt, input_text = new_start)
 
             # add the answer to chat history
@@ -164,4 +177,12 @@ class DialogPage():
         for message_object in self.agent.messages:
             self.render_message(message_object)
 
-
+def remove_query_parameters():
+    js = """
+    <script>
+    const url = new URL(window.location);
+    url.search = ''; // Remove query parameters
+    window.history.replaceState({}, document.title, url);
+    </script>
+    """
+    st.markdown(js, unsafe_allow_html=True)

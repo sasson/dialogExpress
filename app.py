@@ -1,12 +1,12 @@
 import streamlit as st
-from dialog_page import DialogPage
+from dialog_page import DialogPage, remove_query_parameters
+
 
 page_name = "app"
 page_channel = ""
 base_url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app"
 
-if not "page" in st.session_state or not st.session_state.page.page_name == page_name:
-    st.session_state.page = DialogPage(page_name = page_name, page_channel = page_channel)
+DialogPage.start(page_name = page_name, page_channel = page_channel)
 
 page = st.session_state.page
 
@@ -16,11 +16,10 @@ Please answer describing the found info items that were found.
 The question:   
 """ 
 )
-
-# display agent's channel in the sidebar
-#if isinstance(page_name, str):
-#    st.sidebar.title(page.page_name)
-#    st.sidebar.write(page.page_channel)
+# display channel name and domain in the sidebar
+if isinstance(page_name, str):
+    st.sidebar.title(page.page_name)
+    st.sidebar.write(page.page_channel)
 
 page.render_messages()
 
@@ -28,3 +27,6 @@ page.render_messages()
 input_text = st.chat_input("Say something", key="chat_input")
 if input_text:    
     page.on_input(input_text = input_text)
+
+remove_query_parameters()
+
