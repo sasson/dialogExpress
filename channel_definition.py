@@ -28,7 +28,7 @@ class ChannelDefinition:
 
         try:
             with open(file_path, 'rb') as file:
-                data = tomllib.load(file)
+                data = toml.load(file)
 
             channel_data = data.get(channel_name)
             if channel_data:
