@@ -1,8 +1,11 @@
+import sys
 import streamlit as st
 from dialog_page import DialogPage
 from channel_definition import ChannelDefinition
 
 # base_url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app"
+
+st.sidebar.write("Python Version:", sys.version)
 
 definitions = ChannelDefinition.read_all(file_path = "channels.toml")
 
