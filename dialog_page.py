@@ -48,7 +48,7 @@ class DialogPage():
         # Using a list comprehension for efficiency
         result = ''.join([char if char.isalnum() else ' ' for char in s])
         result = result.replace("  ", " ").strip()
-        if len(result) > 250:
+        if len(result) > 350:
             result = result[:250]
 
             # Splitting the string into words
@@ -59,7 +59,7 @@ class DialogPage():
                 words = words[:-1]
 
             # Joining the words back into a string
-            result = ' '.join(words)
+            result = ' '.join(words) + "..."
 
         return  result
 
