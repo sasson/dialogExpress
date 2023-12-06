@@ -11,7 +11,7 @@ The question:
 domain="inner.org"
 prompt="""
 Keep conversation 'safe for work', concise and friendly.
-Discuss the relevant topics:    
+Discuss the relevant topics.
 """
 
 [recipes]
@@ -19,15 +19,15 @@ domain=""
 prompt="""
 Discuss and help to find the kosher recipes.
 Please, keep conversation friendly and concise and 'safe for work'.
-Please describe and discuss recipes that were found. 
+Please discuss such recipes. 
 """
 
 [gifts]
 domain=""
 prompt="""
-Discuss and help to find gifts in amazon.com.
+Discuss and help to find gifts to buy.
 Please, keep conversation 'safe for work', friendly and concise.
-Please describe and discuss the gifts that were found. 
+Please discuss the relevant gifts. 
 """
 
 
