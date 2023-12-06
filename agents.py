@@ -51,10 +51,10 @@ class Agent:
             response = self.co2.chat(
                 chat_history=self.messages,
                 stream=False,
-                max_tokens=800,
+                max_tokens=600,
                 message=message,
-                model="command", 
-                temperature=1.25,
+                model="command-nightly", 
+                temperature=2.5,
                 prompt_truncation='auto',
                 connectors=connectors,
             )

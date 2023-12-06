@@ -51,6 +51,16 @@ class DialogPage():
         if len(result) > 250:
             result = result[:250]
 
+            # Splitting the string into words
+            words = result.split()
+           
+            if words:  # Make sure the list is not empty to avoid IndexError
+                # Removing the last word
+                words = words[:-1]
+
+            # Joining the words back into a string
+            result = ' '.join(words)
+
         return  result
 
     def generate_html_for_result(self, oResult):

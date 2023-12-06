@@ -56,8 +56,8 @@ class ChannelDefinition:
         channel_map = {}
 
         try:
-            with open(file_path, 'rb') as file:
-                data = tomllib.load(file)
+            with open(file_path, 'r') as file:
+                data = toml.load(file)
 
             for channel_name, attributes in data.items():
                 channel_def = ChannelDefinition()
@@ -73,11 +73,3 @@ class ChannelDefinition:
 
         return channel_map
 
-
-if __name__ == "__main__":
-    oChannel = ChannelDefinition.read_all(
-        file_path = "channels.toml", 
-        prompt = "Maintain dialog"
-    )
-    
-    print(oChannel)
