@@ -119,7 +119,7 @@ class DialogPage():
     
     def render_chatbot_message(self, generated_content : str):
         st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
-        st.markdown("<br> /", unsafe_allow_html=True)
+        st.markdown("<br />", unsafe_allow_html=True)
         oText = Text(generated_content = generated_content, concepts = self.agent.concepts)
         st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
 

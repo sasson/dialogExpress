@@ -4,6 +4,7 @@ numpy
 pyyaml
 typing
 langchain
+toml
 
 
 
