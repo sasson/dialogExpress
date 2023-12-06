@@ -53,7 +53,7 @@ class Agent:
                 stream=False,
                 max_tokens=600,
                 message=message,
-                model="command-light-nightly",
+                model="command-nightly",
                 temperature=1.0,
                 prompt_truncation='auto',
                 connectors=connectors,
