@@ -12,12 +12,12 @@ no_sidebar_style = """
 st.markdown(no_sidebar_style, unsafe_allow_html=True)
 
 definition = ChannelDefinition(
-    name = "youtube", 
-    domain = "youtube.com", 
+    name = "facebook", 
+    domain = "facebook.com", 
     prompt = """
 Discuss and help to find interresting stuff.
 Please, keep conversation 'safe for work', friendly and concise.
-Please discuss news and politics. 
+Please discuss relevant topic. 
 Answer the question:   
 """
 )
