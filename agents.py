@@ -51,7 +51,7 @@ class Agent:
             response = self.co2.chat(
                 chat_history=self.messages,
                 stream=False,
-                max_tokens=600,
+                max_tokens=432,
                 message=message,
                 model="command-nightly",
                 temperature=1.5,

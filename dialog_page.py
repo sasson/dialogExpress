@@ -48,8 +48,8 @@ class DialogPage():
         # Using a list comprehension for efficiency
         result = ''.join([char if char.isalnum() else ' ' for char in s])
         result = result.replace("  ", " ").strip()
-        if len(result) > 450:
-            result = result[:450]
+        if len(result) > 350:
+            result = result[:350]
 
             # Splitting the string into words
             words = result.split()
@@ -70,19 +70,20 @@ class DialogPage():
         url = oResult["url"]
         description = self.simplify(snippet)
 
-        return f"""<div class="link" id="{id}">
+        s = f"""<div class="link" id="{id}">
             <a href="{url}" 
                style="color:#489add; font-weight:bold; " 
                target="_blank" 
             >{title}</a>
         </div>
         <div class="url">
-            <span style="color:#48dd8b;">{url}</span>
+            <span style="color:#4fdd48;">{url}</span>
         </div>
-        <div class=:description">
-            {description}
-        </div>
-        """
+        """ 
+        if not "AboutPressCopyrightContact" in description:
+            s += ("<div class=description>" + description + "</div>")
+        
+        return  s;
 
     def generate_html_for_token(self, tag : str, content : str) -> str:
         # Generates HTML based on the tag, content, and url (for links)
@@ -107,19 +108,23 @@ class DialogPage():
 
         return s
 
-    def generate_html_for_results(self) -> str:
+    def generate_html_for_results(self, LIMIT : int = 7) -> str:
         # Generates HTML for all tokens in the list
 
         urls = []   # to avoid the repetition of links
 
+        results = self.agent.results
+
         result_html = ""
-        for result in self.agent.results:
+        for result in results:
             url : str = result["url"]
 
-            if not url in urls and self.agent.ch in url:
+            if not url in urls:
                 html : str = self.generate_html_for_result(result)
                 result_html += html + "<br>"
                 urls.append(url)
+                if len(urls) >= LIMIT:
+                    break;
 
         return  result_html
 
@@ -133,11 +138,11 @@ class DialogPage():
     
     def render_chatbot_message(self, generated_content : str):
         oText = Text(generated_content = generated_content, concepts = self.agent.concepts)
-        if len(self.agent.results) > 0:
-            st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
-        else:
-            st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
+        st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
         st.markdown("<br />", unsafe_allow_html=True)
+
+        if len(self.agent.results) <= 2:
+            st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
 
     def render_message(self, message_object):
         # message["role"] is used because we need to identify user and bot

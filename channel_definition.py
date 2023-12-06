@@ -2,46 +2,43 @@ import toml
 from typing import Optional, Dict
 
 class ChannelDefinition:
-    def __init__(self):
+    def __init__(self, name: str, domain: str, prompt: str):
         """
         Initialize a ChannelDefinition instance with all attributes set to None.
         The attributes are intended to be set using the read method.
         """
-        self.name: Optional[str] = None
-        self.domain: Optional[str] = None
-        self.prompt: Optional[str] = None
+        self.name: Optional[str] = name
+        self.domain: Optional[str] = domain
+        self.prompt: Optional[str] = prompt
 
-    def read(self, file_path: str, channel_name: str, default_prompt: str):
+        #definitions = ChannelDefinition.read_all(file_path = "general.toml")
+
+
+    def read(self, file_path: str):
         """
         Read the channel definition from a TOML file.
 
         Args:
         file_path (str): The path to the TOML file containing channel definitions.
-        channel_name (str): The name of the channel to search for in the TOML file.
-        default_prompt (str): The default prompt to use if the prompt is not defined in the file.
 
         Sets the object's attributes based on the data found in the file.
         """
-        self.name = channel_name
-        self.domain = None  # Default value, indicating no specific domain
-        self.prompt = default_prompt
-
         try:
             with open(file_path, 'rb') as file:
                 data = toml.load(file)
 
-            channel_data = data.get(channel_name)
+            channel_data = data.get("abc")
             if channel_data:
-                self.domain = channel_data.get('domain')
-                self.prompt = channel_data.get('prompt', default_prompt)
+                self.domain = channel_data.get('abc')
 
         except FileNotFoundError:
             print(f"Error: The file {file_path} was not found.")
         except Exception as e:
             print(f"An error occurred while reading the file: {e}")
 
+
     @staticmethod
-    def read_all(file_path: str) -> Dict[str, 'ChannelDefinition']:
+    def read_all1(file_path: str) -> Dict[str, 'ChannelDefinition']:
         """
         Read all channel definitions from a TOML file and return a dictionary mapping
         each channel name to a ChannelDefinition object.
@@ -53,6 +50,7 @@ class ChannelDefinition:
         Returns:
         Dict[str, ChannelDefinition]: A dictionary mapping channel names to their definitions.
         """
+
         channel_map = {}
 
         try:

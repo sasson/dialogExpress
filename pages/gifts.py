@@ -11,19 +11,20 @@ no_sidebar_style = """
 """
 st.markdown(no_sidebar_style, unsafe_allow_html=True)
 
-query_params = st.experimental_get_query_params()
-# [""] is a fallback value if the parameter isn't found
-#name = query_params.get('ch', [""]) [0]
-q = query_params.get('q', [""]) [0]
-
 definition = ChannelDefinition(
     name = "general", 
-    domain = "twitter.com", 
+    domain = "amazon.com", 
     prompt = """
-Please, keep conversation friendly and concise and 'safe for work'.
-Please answer the question:   
+Discuss and help to find gifts to buy.
+Please, keep conversation 'safe for work', friendly and concise.
+Please discuss the relevant gifts. 
+Answer the question:   
 """
 )
+
+query_params = st.experimental_get_query_params()
+# [""] is a fallback value if the parameter isn't found
+q = query_params.get('q', [""]) [0]
 
 # Create an instance of DialogPage
 page = DialogPage(definition = definition, q = q)
@@ -39,4 +40,3 @@ page.render_messages()
 input_text = st.chat_input("Say something", key="chat_input")
 if input_text:    
     page.on_input(input_text = input_text)
-

@@ -1,6 +1,5 @@
 import sys
 import streamlit as st
-import toml
 from dialog_page import DialogPage
 from channel_definition import ChannelDefinition
 
@@ -17,11 +16,12 @@ query_params = st.experimental_get_query_params()
 q = query_params.get('q', [""]) [0]
 
 definition = ChannelDefinition(
-    name = "general", 
-    domain = "twitter.com", 
+    name = "recipes", 
+    domain = "youtube.com", 
     prompt = """
 Please, keep conversation friendly and concise and 'safe for work'.
-Please answer the question:   
+Discuss and help to find the kosher recipes.
+Answer the question:   
 """
 )
 
@@ -39,4 +39,3 @@ page.render_messages()
 input_text = st.chat_input("Say something", key="chat_input")
 if input_text:    
     page.on_input(input_text = input_text)
-
