@@ -11,13 +11,13 @@ The question:
 domain="inner.org"
 prompt="""
 Keep conversation 'safe for work', concise and friendly.
-Discuss the relevant content found.
+Discuss the links found in the website:  
 """
 
 [recipes]
 domain=""
 prompt="""
-iscuss and help to find the kosher recipes.
+Discuss and help to find the kosher recipes.
 Please, keep conversation friendly and concise and 'safe for work'.
 Please describe and discuss recipes that were found. 
 """
