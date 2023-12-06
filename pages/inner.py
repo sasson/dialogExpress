@@ -11,8 +11,6 @@ no_sidebar_style = """
 """
 st.markdown(no_sidebar_style, unsafe_allow_html=True)
 
-# base_url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app"
-
 definitions = ChannelDefinition.read_all(file_path = "channels.toml")
 
 query_params = st.experimental_get_query_params()

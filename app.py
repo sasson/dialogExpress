@@ -4,13 +4,6 @@ import toml
 from dialog_page import DialogPage
 from channel_definition import ChannelDefinition
 
-no_sidebar_style = """
-    <style>
-        div[data-testid="stSidebarNav"] {display: none;}
-    </style>
-"""
-st.markdown(no_sidebar_style, unsafe_allow_html=True)
-
 # base_url = "https://sasson-dialogexpress-app-jkbb2w.streamlit.app"
 
 definitions = ChannelDefinition.read_all(file_path = "channels.toml")

@@ -48,8 +48,8 @@ class DialogPage():
         # Using a list comprehension for efficiency
         result = ''.join([char if char.isalnum() else ' ' for char in s])
         result = result.replace("  ", " ").strip()
-        if len(result) > 350:
-            result = result[:250]
+        if len(result) > 450:
+            result = result[:450]
 
             # Splitting the string into words
             words = result.split()
@@ -70,13 +70,16 @@ class DialogPage():
         url = oResult["url"]
         description = self.simplify(snippet)
 
-        return f"""<div id="{id}">
+        return f"""<div class="link" id="{id}">
             <a href="{url}" 
-               style="color:#blue; font-weight:bold; " 
+               style="color:#489add; font-weight:bold; " 
                target="_blank" 
             >{title}</a>
         </div>
-        <div>
+        <div class="url">
+            <span style="color:#48dd8b;">{url}</span>
+        </div>
+        <div class=:description">
             {description}
         </div>
         """
@@ -130,9 +133,11 @@ class DialogPage():
     
     def render_chatbot_message(self, generated_content : str):
         oText = Text(generated_content = generated_content, concepts = self.agent.concepts)
-        st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
+        if len(self.agent.results) > 0:
+            st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
+        else:
+            st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
         st.markdown("<br />", unsafe_allow_html=True)
-        st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
 
     def render_message(self, message_object):
         # message["role"] is used because we need to identify user and bot

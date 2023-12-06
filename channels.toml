@@ -10,8 +10,8 @@ The question:
 [inner]
 domain="inner.org"
 prompt="""
-Keep conversation 'safe for work', concise and friendly.
 Discuss the relevant topics.
+Keep conversation 'safe for work', concise and friendly.
 """
 
 [recipes]
@@ -30,4 +30,17 @@ Please, keep conversation 'safe for work', friendly and concise.
 Please discuss the relevant gifts. 
 """
 
+[pnimi]
+domain="pnimi.org.il"
+prompt="""
+Discuss the relevant topics.
+Keep conversation 'safe for work', concise and friendly.
+"""
+
+[machon]
+domain="galeinai.org.il"
+prompt="""
+Discuss the relevant topics.
+Keep conversation 'safe for work', concise and friendly.
+"""
 
