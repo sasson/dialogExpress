@@ -87,10 +87,11 @@ class DialogPage():
             # Return plain text content for text tags
             return " " + content
         elif tag == "link":
+            return " " + content
             # Generate a span with a style for color-coded content
             # Format the content for the URL query string
-            query_content = content.replace("."," ").replace("  "," ").replace(" ", "+")
-            return f'<a href="?q={query_content}" style="color:blue;" target="_self">{content}</a>'
+            #  query_content = content.replace("."," ").replace("  "," ").replace(" ", "+")
+            #  return f'<a href="?q={query_content}" style="color:blue;" target="_self">{content}</a>'
         else:
             # Default case returns content as is
             return f'<span style="color:red;">{content}</span>'
