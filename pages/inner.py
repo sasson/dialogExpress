@@ -17,11 +17,11 @@ definitions = ChannelDefinition.read_all(file_path = "channels.toml")
 
 query_params = st.experimental_get_query_params()
 # [""] is a fallback value if the parameter isn't found
-name = query_params.get('ch', [""]) [0]
+name = query_params.get('ch', ["inner"]) [0]
 q = query_params.get('q', [""]) [0]
 
 if not name:
-    name = "general"
+    name = "inner"
 
 if name in definitions:
     definition = definitions[name]
