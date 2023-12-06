@@ -1,4 +1,4 @@
-import tomllib
+import toml
 from typing import Optional, Dict
 
 class ChannelDefinition:
