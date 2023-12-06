@@ -1,54 +1,21 @@
 import streamlit as st
+import typing
+from typing import Optional, Dict
 
 from text import Text
+from channel_definition import ChannelDefinition
 from agents import Agent
 
 class DialogPage():
-    @staticmethod
-    def start(page_name : str, page_channel : str):
-        if not "page" in st.session_state:
-            st.session_state.ignore_q = False
-            st.session_state.page = DialogPage(page_name = page_name, page_channel = page_channel)
+    def __init__(self, definition : ChannelDefinition, q : str):
+        self.name = definition.name
+        self.domain = definition.domain
+        self.prompt = definition.prompt
+        self.q = q
 
-        if st.session_state.page.page_name == page_name:
-            st.session_state.ignore_q = False
-        else:
-            st.session_state.ignore_q = True
-            st.session_state.page = DialogPage(page_name = page_name, page_channel = page_channel)
-
-    def __init__(self, page_name: str, page_channel: str = "", prompt: str = ""):
-        self.page_name = page_name
-        self.page_channel = page_channel
-        self.prompt = prompt
-        self.agent = None
-
-    def initialize(self, page_name : str, page_channel : str, prompt : str):
-        if st.session_state.ignore_q:
-            # switching to a new, different page by clicking on the left sidebar
-            new_start = ""
-        else: 
-            # Accessing the query parameters
-            # Query parameters are returned as a dictionary
-            query_params = st.experimental_get_query_params()
-            # [""] is a fallback value if the parameter isn't found
-            param_values = query_params.get('q', [""]) 
-            new_start = param_values [0]
-
-        self.prompt = prompt
-
-        needs_starting_answer = False
-        if self.agent == None:
-            self.agent = Agent(ch = page_channel, start=new_start)
-            if not new_start == "":
-                needs_starting_answer = True
-
-        if not new_start == self.agent.start:
-            self.agent.start = new_start
-            needs_starting_answer = True
-
-        if needs_starting_answer and not new_start == "" and not st.session_state.ignore_q:
-            answer_text = self.agent.generate_answer(prompt = self.prompt, input_text = new_start)
-
+        self.agent = Agent(ch = self.name, domain = self.domain, start=self.q)
+        if self.q != "":
+            answer_text = self.agent.generate_answer(prompt = self.prompt, input_text = self.q)
             # add the answer to chat history
             self.agent.messages.append( {"role":"CHATBOT", "message":answer_text} )
 
@@ -151,10 +118,11 @@ class DialogPage():
         st.markdown(html, unsafe_allow_html=True)
     
     def render_chatbot_message(self, generated_content : str):
-        st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
-
-        oText = Text(generated_content = generated_content, concepts = self.agent.concepts)
-        st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
+        if len(self.result) >= 1:
+            st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
+        else:
+            oText = Text(generated_content = generated_content, concepts = self.agent.concepts)
+            st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
 
     def render_message(self, message_object):
         # message["role"] is used because we need to identify user and bot

@@ -2,8 +2,9 @@ import streamlit as st
 import cohere
 
 class Agent:
-    def __init__(self, ch : str, start : str):
+    def __init__(self, ch : str, domain : str, start : str):
         self.ch = ch
+        self.domain = domain
         self.start = start
         self.generated_content = ""
 
@@ -39,10 +40,10 @@ class Agent:
 
 
     def  generate_answer(self, prompt : str, input_text : str):
-        if self.ch == "":
+        if self.domain == "":
             connectors = [ {"id": "web-search"} ]
         else:
-            connectors = [ {"id": "web-search","options": {"site": self.ch}} ]
+            connectors = [ {"id": "web-search","options": {"site": self.domain}} ]
 
         message = prompt + " " + input_text
 
@@ -52,8 +53,8 @@ class Agent:
                 stream=False,
                 max_tokens=800,
                 message=message,
-                model="command-light", 
-                temperature=1.5,
+                model="command-light-nightly", 
+                temperature=0.5,
                 prompt_truncation='auto',
                 connectors=connectors,
             )

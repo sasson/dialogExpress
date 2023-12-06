@@ -1,0 +1,37 @@
+[general]
+domain=""
+prompt="""Please, keep conversation friendly and concise and 'safe for work'.
+Please answer describing the found info items that were found. 
+Discuss websites selling relevant products and recommended by other websites
+The question:   
+"""
+
+[inner]
+domain="inner.org"
+prompt="""Discuss mentioned and relevant content.
+Keep conversation friendly and concise and 'safe for work'.
+Question:  
+"""
+
+[recipes]
+domain=""
+prompt="""Discuss and help to find the kosher recipes.
+Please, keep conversation friendly and concise and 'safe for work'.
+Please describe recipes found. 
+Question:  """
+
+[gifts]
+domain=""
+prompt="""Discuss and help to find the kosher recipes.
+Please, keep conversation friendly and concise and 'safe for work'.
+Please describe recipes found. 
+Question:  """
+
+[houses]
+domain="zillow.com"
+prompt="""Discuss and help find houses.
+Please, keep conversation friendly and concise and 'safe for work'.
+Stay within topic of Real Estate.
+Please answer describing the houses that were found. 
+The question:   
+"""
