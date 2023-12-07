@@ -1,4 +1,6 @@
+import sys
 import streamlit as st
+import toml
 from dialog_page import DialogPage
 from channel_definition import ChannelDefinition
 
@@ -10,11 +12,11 @@ no_sidebar_style = """
 st.markdown(no_sidebar_style, unsafe_allow_html=True)
 
 definition = ChannelDefinition(
-    name = "inner", 
-    domain = "inner.org", 
+    name = "crunchbase", 
+    domain = "crunchbase.com", 
     prompt = """
 Please, keep conversation 'safe for work', friendly and concise.
-Please discuss relevant concepts and ideas. 
+Please discuss startups and inverstors.
 Answer the question:   
 """
 )
@@ -22,7 +24,6 @@ Answer the question:
 query_params = st.experimental_get_query_params()
 # [""] is a fallback value if the parameter isn't found
 q = query_params.get('q', [""]) [0]
-
 
 # Create an instance of DialogPage
 page = DialogPage(definition = definition, q = q)
