@@ -48,8 +48,8 @@ class DialogPage():
         # Using a list comprehension for efficiency
         result = ''.join([char if char.isalnum() else ' ' for char in s])
         result = result.replace("  ", " ").strip()
-        if len(result) > 350:
-            result = result[:350]
+        if len(result) > 400:
+            result = result[:400]
 
             # Splitting the string into words
             words = result.split()
@@ -137,12 +137,11 @@ class DialogPage():
         st.markdown(html, unsafe_allow_html=True)
     
     def render_chatbot_message(self, generated_content : str):
+        st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
+        st.markdown("<br />", unsafe_allow_html=True)
         oText = Text(generated_content = generated_content, concepts = self.agent.concepts)
         st.markdown(self.generate_html_for_results(), unsafe_allow_html=True)
         st.markdown("<br />", unsafe_allow_html=True)
-
-        if len(self.agent.results) <= 2:
-            st.markdown(self.generate_html_for_answer(oText=oText), unsafe_allow_html=True)
 
     def render_message(self, message_object):
         # message["role"] is used because we need to identify user and bot
